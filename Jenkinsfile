@@ -6,7 +6,8 @@ pipeline {
         string(name: 'APP_FOLDER_PATH', defaultValue: 'Docker-Tasks/Dockerfile-Assignment/use_case-1', description: 'Relative path to the app folder on EC2')
         string(name: 'DOCKER_IMAGE', defaultValue: 'flask-hello-app', description: 'Docker image name to build')
         string(name: 'CONTAINER_NAME', defaultValue: 'flask-hello-container', description: 'Docker container name to run')
-        string(name: 'EXPOSE_PORT', defaultValue: '5000', description: 'Port to expose on EC2 host')
+        string(name: 'EXPOSE_PORT_SER', defaultValue: '5000', description: 'Port to expose on EC2 host')
+        string(name: 'EXPOSE_PORT_CON', defaultValue: '5000', description: 'Port to expose on container')
     }
 
     stages {
@@ -24,7 +25,7 @@ pipeline {
                             docker rm -f ${params.CONTAINER_NAME} || true
 
                             echo "[+] Running Container on Port ${params.EXPOSE_PORT}..."
-                            docker run -d --name ${params.CONTAINER_NAME} -p ${params.EXPOSE_PORT}:5000 ${params.DOCKER_IMAGE}
+                            docker run -d --name ${params.CONTAINER_NAME} -p ${params.EXPOSE_PORT}:${params.EXPOSE_PORT} ${params.DOCKER_IMAGE}
                         '
                     """
                 }
