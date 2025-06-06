@@ -1,11 +1,12 @@
 pipeline {
     agent any
 
-    environment {
-        REMOTE_HOST = "35.171.26.232"
-        SSH_USER = "ec2-user"
-        DOCKER_IMAGE = "flask-hello-app"
-        CONTAINER_NAME = "flask-hello-container"
+    parameters {
+        string(name: 'REMOTE_HOST', defaultValue: '35.171.26.232', description: 'Public IP of the EC2 instance')
+        string(name: 'APP_FOLDER_PATH', defaultValue: 'Docker-Tasks/Dockerfile-Assignment/use_case-1', description: 'Relative path to the app folder on EC2')
+        string(name: 'DOCKER_IMAGE', defaultValue: 'flask-hello-app', description: 'Docker image name to build')
+        string(name: 'CONTAINER_NAME', defaultValue: 'flask-hello-container', description: 'Docker container name to run')
+        string(name: 'EXPOSE_PORT', defaultValue: '5000', description: 'Port to expose on EC2 host')
     }
 
     stages {
@@ -13,16 +14,17 @@ pipeline {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-private-key-ec2', keyFileVariable: 'SSH_KEY')]) {
                     sh """
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${SSH_USER}@${REMOTE_HOST} '
-                            cd Docker-Tasks/Dockerfile-Assignment/use_case-1
+                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no ec2-user@${params.REMOTE_HOST} '
+                            cd ${params.APP_FOLDER_PATH}
 
-                            echo "[+] Building Docker Image..."
-                            docker build -t ${DOCKER_IMAGE} .
-                            
-                            docker rm -f ${CONTAINER_NAME} || true
-                            
-                            echo "[+] Running Container..."
-                            docker run -d --name ${CONTAINER_NAME} -p 5000:5000 ${DOCKER_IMAGE}
+                            echo "[+] Building Docker Image: ${params.DOCKER_IMAGE}..."
+                            docker build -t ${params.DOCKER_IMAGE} .
+
+                            echo "[+] Removing existing container: ${params.CONTAINER_NAME} (if exists)..."
+                            docker rm -f ${params.CONTAINER_NAME} || true
+
+                            echo "[+] Running Container on Port ${params.EXPOSE_PORT}..."
+                            docker run -d --name ${params.CONTAINER_NAME} -p ${params.EXPOSE_PORT}:5000 ${params.DOCKER_IMAGE}
                         '
                     """
                 }
