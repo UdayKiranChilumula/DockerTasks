@@ -25,7 +25,7 @@ pipeline {
                             docker rm -f ${params.CONTAINER_NAME} || true
 
                             echo "[+] Running Container on Port ${params.EXPOSE_PORT}..."
-                            docker run -d --name ${params.CONTAINER_NAME} -p ${params.EXPOSE_PORT}:${params.EXPOSE_PORT} ${params.DOCKER_IMAGE}
+                            docker run -d --name ${params.CONTAINER_NAME} -p ${params.EXPOSE_PORT_SER}:${params.EXPOSE_PORT_CON} ${params.DOCKER_IMAGE}
                         '
                     """
                 }
