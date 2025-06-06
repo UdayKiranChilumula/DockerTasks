@@ -22,7 +22,7 @@ pipeline {
                             docker rm -f ${CONTAINER_NAME} || true
                             
                             echo "[+] Running Container..."
-                            docker run -d -d --name ${CONTAINER_NAME} -p 5000:5000 ${DOCKER_IMAGE}
+                            docker run -d --name ${CONTAINER_NAME} -p 5000:5000 ${DOCKER_IMAGE}
                         '
                     """
                 }
