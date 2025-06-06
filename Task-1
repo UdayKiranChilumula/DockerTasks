@@ -12,7 +12,7 @@ pipeline {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-private-key-ec2', keyFileVariable: 'SSH_KEY')]) {
                     sh """
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${SSH_USER}@${REMOTE_HOST} << 'EOF'
+                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${SSH_USER}@${REMOTE_HOST} '
                             cd Docker-Tasks/Dockerfile-Assignment/use_case-1
 
                             echo "[+] Building Docker Image..."
@@ -20,7 +20,7 @@ pipeline {
 
                             echo "[+] Running Container..."
                             docker run -d -p 5000:5000 ${DOCKER_IMAGE}
-                        EOF
+                        '
                     """
                 }
             }
